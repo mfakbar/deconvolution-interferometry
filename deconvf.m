@@ -2,10 +2,11 @@ function [deconf] = deconvf(s,r,t,ep)
 % water-level deconvolution interferometry in frequency domain
 % Muhammad F. Akbar @ 2018
 %
-% s = nx1 vector/trace at pseudosource location 
-% r = receivers trace
+% s = n x 1 vector/trace/signal at pseudosource location (n = number of samples)
+% r = n x r receivers traces (r = number of receiver)
 % deconf = pseudoshot gather of pseudosource at s position
 % ep = stabilization parameter
+% physical interpretation of 'deconf': Virtual/pseudoshot gather recorded at each of r locations as if there is a physical source at s location.
 
 [~,nx] = size(r);
 [nt,~] = size(t);
@@ -20,10 +21,10 @@ wr = fft(rp);
 ws = fft(sp);
 
 deconff = zeros(nt*2,nx);
-OP = conj(ws)./(abs(ws).^2+(ep^2)*max(abs(ws).^2)); % default
+OP = conj(ws)./(abs(ws).^2+(ep^2)*max(abs(ws).^2)); % deconvolution operator
 
-for i = 1:nx
-deconff(:,i) = wr(:,i).*OP;
+for i = 1:nx % apply the deconvolution operator
+    deconff(:,i) = wr(:,i).*OP;
 end
 
 decon = real(ifft(deconff,[],1));
